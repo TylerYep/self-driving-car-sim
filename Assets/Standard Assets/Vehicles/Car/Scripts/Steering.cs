@@ -11,6 +11,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public float H { get; private set; }
         public float V { get; private set; }
+
         public bool Cruising { get; private set; } // cruise control
 		public bool mouse_hold;
 		public float mouse_start;
@@ -42,16 +43,16 @@ namespace UnityStandardAssets.Vehicles.Car
                 V = CrossPlatformInputManager.GetAxis("Vertical");
             }
 
-			if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) 
+			if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
 			{
-				if (H > -1.0) 
+				if (H > -1.0)
 				{
 					H -= 0.05f;
 				}
 			}
-			else if (Input.GetKey (KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) 
+			else if (Input.GetKey (KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
 			{
-				if (H < 1.0) 
+				if (H < 1.0)
 				{
 					H += 0.05f;
 				}
@@ -69,15 +70,15 @@ namespace UnityStandardAssets.Vehicles.Car
 					// set the start reference position for position tracking
 					mouse_start = mousePosition;
 				}
-			
+
 				// This way h is [-1, -1]
 				// it's quite hard to get a max or close to max
 				// steering angle unless it's actually wanted.
 				H = Mathf.Clamp ( (mousePosition - mouse_start)/(Screen.width/6), -1, 1);
-			
+
             }
             else
-            { 
+            {
 
 				// reset
 				mouse_hold = false;
@@ -85,7 +86,7 @@ namespace UnityStandardAssets.Vehicles.Car
 				H = CrossPlatformInputManager.GetAxis ("Horizontal");
 
             }
-				
+
         }
     }
 }

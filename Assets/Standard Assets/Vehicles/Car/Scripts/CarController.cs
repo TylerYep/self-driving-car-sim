@@ -55,6 +55,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private Quaternion[] m_WheelMeshLocalRotations;
         private Vector3 m_Prevpos, m_Pos;
         private float m_SteerAngle;
+        private int m_HighLevelControl;
         private int m_GearNum;
         private float m_GearFactor;
         private float m_OldRotation;
@@ -83,11 +84,11 @@ namespace UnityStandardAssets.Vehicles.Car
             {
                 m_isRecording = value;
                 if(value == true)
-                { 
+                {
 					Debug.Log("Starting to record");
 					carSamples = new Queue<CarSample>();
-					StartCoroutine(Sample());             
-                } 
+					StartCoroutine(Sample());
+                }
 				else
                 {
                     Debug.Log("Stopping record");
@@ -109,7 +110,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
 		public bool checkSaveLocation()
 		{
-			if (m_saveLocation != "") 
+			if (m_saveLocation != "")
 			{
 				return true;
 			}
@@ -123,6 +124,10 @@ namespace UnityStandardAssets.Vehicles.Car
         public float CurrentSteerAngle {
             get { return m_SteerAngle; }
             set { m_SteerAngle = value; }
+        }
+
+        public int HighLevelControl {
+            get { return m_HighLevelControl; }
         }
 
         public float CurrentSpeed{ get { return m_Rigidbody.velocity.magnitude * 2.23693629f; } }
@@ -406,8 +411,14 @@ namespace UnityStandardAssets.Vehicles.Car
             }
         }
 
+      public void setHighLevelControl(int h)
+      {
+        m_HighLevelControl = h;
+        MonoBehaviour.print(m_HighLevelControl);
+      }
 
-		//Changed the WriteSamplesToDisk to a IEnumerator method that plays back recording along with percent status from UISystem script 
+
+		//Changed the WriteSamplesToDisk to a IEnumerator method that plays back recording along with percent status from UISystem script
 		//instead of showing frozen screen until all data is recorded
 		public IEnumerator WriteSamplesToDisk()
 		{
@@ -425,14 +436,14 @@ namespace UnityStandardAssets.Vehicles.Car
 				string leftPath = WriteImage (LeftCamera, "left", sample.timeStamp);
 				string rightPath = WriteImage (RightCamera, "right", sample.timeStamp);
 
-				string row = string.Format ("{0},{1},{2},{3},{4},{5},{6}\n", centerPath, leftPath, rightPath, sample.steeringAngle, sample.throttle, sample.brake, sample.speed);
+				string row = string.Format ("{0},{1},{2},{3},{4},{5},{6},{7}\n", centerPath, leftPath, rightPath, sample.steeringAngle, sample.throttle, sample.brake, sample.speed, sample.highLevelControl);
 				File.AppendAllText (Path.Combine (m_saveLocation, CSVFileName), row);
 			}
 			if (carSamples.Count > 0) {
 				//request if there are more samples to pull
-				StartCoroutine(WriteSamplesToDisk()); 
+				StartCoroutine(WriteSamplesToDisk());
 			}
-			else 
+			else
 			{
 				//all samples have been pulled
 				StopCoroutine(WriteSamplesToDisk());
@@ -475,6 +486,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 sample.speed = CurrentSpeed;
                 sample.position = transform.position;
                 sample.rotation = transform.rotation;
+                sample.highLevelControl = m_HighLevelControl;
 
                 carSamples.Enqueue(sample);
 
@@ -487,7 +499,7 @@ namespace UnityStandardAssets.Vehicles.Car
             {
                 StartCoroutine(Sample());
             }
-				
+
         }
 
         private void OpenFolder(string location)
@@ -498,7 +510,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private string WriteImage (Camera camera, string prepend, string timestamp)
         {
-            //needed to force camera update 
+            //needed to force camera update
             camera.Render();
             RenderTexture targetTexture = camera.targetTexture;
             RenderTexture.active = targetTexture;
@@ -523,6 +535,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public float throttle;
         public float brake;
         public float speed;
+        public int highLevelControl;
         public string timeStamp;
     }
 

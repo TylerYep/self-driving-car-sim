@@ -34,7 +34,7 @@ public class CommandServer : MonoBehaviour
 		EmitTelemetry(obj);
 	}
 
-	// 
+	//
 	void onManual(SocketIOEvent obj)
 	{
 		EmitTelemetry (obj);
@@ -64,6 +64,7 @@ public class CommandServer : MonoBehaviour
 				data["steering_angle"] = _carController.CurrentSteerAngle.ToString("N4");
 				data["throttle"] = _carController.AccelInput.ToString("N4");
 				data["speed"] = _carController.CurrentSpeed.ToString("N4");
+				data["high_level_control"] = _carController.HighLevelControl.ToString("N");
 				data["image"] = Convert.ToBase64String(CameraHelper.CaptureFrame(FrontFacingCamera));
 				_socket.Emit("telemetry", new JSONObject(data));
 			}
@@ -71,8 +72,8 @@ public class CommandServer : MonoBehaviour
 
 		//    UnityMainThreadDispatcher.Instance().Enqueue(() =>
 		//    {
-		//      	
-		//      
+		//
+		//
 		//
 		//		// send only if it's not being manually driven
 		//		if ((Input.GetKey(KeyCode.W)) || (Input.GetKey(KeyCode.S))) {
@@ -87,8 +88,8 @@ public class CommandServer : MonoBehaviour
 		//			data["image"] = Convert.ToBase64String(CameraHelper.CaptureFrame(FrontFacingCamera));
 		//			_socket.Emit("telemetry", new JSONObject(data));
 		//		}
-		//      
-		////      
+		//
+		////
 		//    });
 	}
 }
